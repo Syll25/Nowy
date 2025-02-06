@@ -1,6 +1,8 @@
 package org.example;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Nowa2 {
 
@@ -10,20 +12,24 @@ public class Nowa2 {
                 new SportsCar("BMW", "A4", "SZY6738", 2012, false, 350),
                 new ElectricCar("Honda", "Y", "HU8394", 2015, true, 0.7),
                 new ElectricCar("Tesla", "Y", "Y6G5R7", 2020, true, 0.3),
+                new ElectricCar("Toyota", "E", "J7D5G", 2018, true, 0.4),
                 new Car("Ford", "Tremor", "FH5384", 2020, true),
                 new SportsCar("Audi", "Q5", "GE4729", 2019, true, 300));
 
-        Car car = findWithSpeedAtLeast(cars, 300);
-        System.out.println(car.brand);
+        Car car1 = findWithSpeedAtLeast(cars, 300);
+        System.out.println("Samochod z szybkoscia minimum 300km/h: " + car1.brand);
 
-        Car car1 = findUncharged(cars, 0.6);
-        System.out.println(car1.brand);
+        findUncharged(cars, 0.6).forEach(car -> System.out.println("Samochod z bateria ponizej 60%: " + car.brand));
 
-        Car fastCar = findWithSpeedAtLeastWithLoop(cars, 300);
-        System.out.println(fastCar.brand);
+        List<Car> fastCar = findWithSpeedAtLeastWithLoop(cars, 300);
+        for(Car car : fastCar) {
+            System.out.println("Samochod z szybkoscia minimum 300km/h wyszukany przez petle: " + car.brand);
+        }
+        List<Car> lowBatteryCar = findUnchargedWithLoop(cars, 0.6);
+        for (Car car : lowBatteryCar) {
+            System.out.println("Samochody z bateria ponizej 60% wyszukane przez petle: " + car.brand);
+        }
 
-        Car lowBatteryCar = findUnchargedWithLoop(cars, 0.6);
-        System.out.println(lowBatteryCar.brand);
 
     }
 
@@ -37,33 +43,34 @@ public class Nowa2 {
                 .findFirst().get();
 
     }
-    public static Car findUncharged(List<Car> cars, double batteryLevel) {
+    public static List<Car> findUncharged(List<Car> cars, double batteryLevel) {
         return cars.stream()
                 .filter(car -> car instanceof ElectricCar)
                 .map(car -> (ElectricCar)car)
                 .filter(car -> car.batteryLevel < batteryLevel)
-                .filter(car -> car.isAvailable = true)
-                .findFirst().get();
+                .collect(Collectors.toList());
     }
 
-    public static Car findWithSpeedAtLeastWithLoop(List<Car> cars, int maxSpeed) {
+    public static List<Car> findWithSpeedAtLeastWithLoop(List<Car> cars, int maxSpeed) {
+        List<Car> result = new ArrayList<>();
         for (Car car : cars) {
             if (car instanceof SportsCar) {
                 SportsCar sportsCar = (SportsCar) car;
                 if (sportsCar.maxSpeed > maxSpeed && sportsCar.isAvailable)
-                    return sportsCar;
+                    result.add(sportsCar);
             }
-        } return null;
+        } return result;
     }
 
-    public static Car findUnchargedWithLoop(List<Car> cars, double batteryLevel) {
+    public static List<Car> findUnchargedWithLoop(List<Car> cars, double batteryLevel) {
+        List<Car> result = new ArrayList<>();
         for (Car car : cars) {
             if (car instanceof ElectricCar) {
                 ElectricCar electricCar = (ElectricCar) car;
-                if (electricCar.batteryLevel < batteryLevel && electricCar.isAvailable)
-                    return electricCar;
+                if (electricCar.batteryLevel < batteryLevel)
+                    result.add(electricCar);
             }
-        } return null;
+        } return result;
     }
 
 
